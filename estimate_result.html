@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Estimate Results - {{ shop.shop_name or "TKO Auto Repair" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        h1, h2 { text-align: center; }
+        .summary, .totals { margin-top: 20px; }
+        .totals table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .totals th, .totals td {
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+            text-align: right;
+        }
+        .totals th { text-align: left; }
+        .totals tr:last-child td { font-weight: bold; }
+        .label-col { text-align: left; }
+        .back-link { margin-top: 20px; }
+        .small-note { font-size: 0.9em; color: #555; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<h1>{{ shop.shop_name or "TKO Auto Repair" }}</h1>
+<h2>Estimate Summary</h2>
+
+<div class="summary">
+    <p><strong>Customer:</strong> {{ customer_name }}</p>
+    <p><strong>Phone:</strong> {{ phone }}</p>
+    {% if email %}
+    <p><strong>Email:</strong> {{ email }}</p>
+    {% endif %}
+    <p><strong>Vehicle:</strong> {{ year }} {{ make }} {{ model }}</p>
+    {% if concern %}
+    <p><strong>Concern:</strong> {{ concern }}</p>
+    {% endif %}
+    <p><strong>Labor hours:</strong> {{ "%.1f"|format(hours) }} at ${{ "%.2f"|format(shop.labor_rate_per_hour) }}/hr</p>
+</div>
+
+<div class="totals">
+    <h2>Pricing (Estimate)</h2>
+    <table>
+        <tr>
+            <th class="label-col">Description</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td class="label-col">Parts Total</td>
+            <td>${{ "%.2f"|format(totals.parts_total) }}</td>
+        </tr>
+        <tr>
+            <td class="label-col">Labor Total</td>
+            <td>${{ "%.2f"|format(totals.labor_total) }}</td>
+        </tr>
+        <tr>
+            <td class="label-col">Misc / Fluids</td>
+            <td>${{ "%.2f"|format(totals.misc_total) }}</td>
+        </tr>
+        <tr>
+            <td class="label-col">Shop Supplies</td>
+            <td>${{ "%.2f"|format(totals.shop_supplies) }}</td>
+        </tr>
+        <tr>
+            <td class="label-col">Subtotal (before discount & tax)</td>
+            <td>${{ "%.2f"|format(totals.subtotal) }}</td>
+        </tr>
+        {% if discount_pct and discount_pct > 0 %}
+        <tr>
+            <td class="label-col">Discount ({{ "%.1f"|format(discount_pct) }}%)</td>
+            <td>- ${{ "%.2f"|format(totals.discount_amount) }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td class="label-col">Taxable Amount</td>
+            <td>${{ "%.2f"|format(totals.taxable) }}</td>
+        </tr>
+        <tr>
+            <td class="label-col">Sales Tax ({{ "%.2f"|format(shop.tax_rate * 100) }}%)</td>
+            <td>${{ "%.2f"|format(totals.tax_amount) }}</td>
+        </tr>
+        <tr>
+            <td class="label-col">Grand Total (Estimate)</td>
+            <td>${{ "%.2f"|format(totals.grand_total) }}</td>
+        </tr>
+    </table>
+</div>
+
+<p class="small-note">
+    This is an estimate only and may change after full inspection, additional diagnostics, or if parts/labor requirements change.
+</p>
+
+<p class="back-link">
+    <a href="{{ url_for('estimate') }}">&#8592; Back to estimate form</a>
+</p>
+
+</body>
+</html>

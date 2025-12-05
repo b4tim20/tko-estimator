@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Estimate - {{ shop.shop_name or "TKO Auto Repair" }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        h1, h2 { text-align: center; }
+        form { margin-top: 20px; }
+        .field { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 4px; }
+        input[type="text"], input[type="email"], input[type="number"], textarea {
+            width: 100%; padding: 8px; box-sizing: border-box;
+        }
+        textarea { min-height: 80px; }
+        .small-note { font-size: 0.9em; color: #555; }
+        .section-title { margin-top: 20px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+        .btn-submit {
+            margin-top: 15px; padding: 10px 20px; font-size: 1rem;
+            border: none; cursor: pointer; background: #333; color: #fff;
+        }
+        .required { color: red; }
+        .flash { background: #ffe0e0; padding: 10px; margin-bottom: 10px; border: 1px solid #ffaaaa; }
+    </style>
+</head>
+<body>
+
+<h1>{{ shop.shop_name or "TKO Auto Repair" }}</h1>
+<p style="text-align:center;">
+    Online Estimate Request – this is an estimate only; final pricing may vary after inspection.
+</p>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="flash">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="post" action="{{ url_for('estimate') }}">
+
+    <h2 class="section-title">Customer Information</h2>
+
+    <div class="field">
+        <label for="name">Name <span class="required">*</span></label>
+        <input type="text" id="name" name="name" required>
+    </div>
+
+    <div class="field">
+        <label for="phone">Phone <span class="required">*</span></label>
+        <input type="text" id="phone" name="phone" required>
+    </div>
+
+    <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email">
+    </div>
+
+    <h2 class="section-title">Vehicle Information</h2>
+
+    <div class="field">
+        <label for="year">Year <span class="required">*</span></label>
+        <input type="text" id="year" name="year" required>
+    </div>
+
+    <div class="field">
+        <label for="make">Make <span class="required">*</span></label>
+        <input type="text" id="make" name="make" required>
+    </div>
+
+    <div class="field">
+        <label for="model">Model <span class="required">*</span></label>
+        <input type="text" id="model" name="model" required>
+    </div>
+
+    <div class="field">
+        <label for="concern">What is going on with the vehicle?</label>
+        <textarea id="concern" name="concern" placeholder="Describe the issues, noises, warning lights, etc."></textarea>
+    </div>
+
+    <h2 class="section-title">Service Details</h2>
+
+    <div class="field">
+        <label for="hours">Estimated labor hours</label>
+        <input type="number" step="0.1" min="0" id="hours" name="hours" value="1">
+        <div class="small-note">
+            Your current shop labor rate is ${{ "%.2f"|format(shop.labor_rate_per_hour) }} per hour.
+        </div>
+    </div>
+
+    <div class="field">
+        <label for="misc_fluids">Misc fluids / shop fees ($)</label>
+        <input type="number" step="0.01" min="0" id="misc_fluids" name="misc_fluids" value="0">
+    </div>
+
+    <div class="field">
+        <label for="discount_pct">Discount (%)</label>
+        <input type="number" step="0.1" min="0" id="discount_pct" name="discount_pct" value="0">
+        <div class="small-note">
+            For example, enter 10 for a 10% discount.
+        </div>
+    </div>
+
+    <button type="submit" class="btn-submit">Calculate Estimate</button>
+
+    <p class="small-note" style="margin-top:10px;">
+        This is a preliminary estimate based on the information you provide. Final pricing may change after full diagnosis.
+    </p>
+</form>
+
+</body>
+</html>
